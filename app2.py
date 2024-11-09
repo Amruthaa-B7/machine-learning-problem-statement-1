@@ -35,3 +35,26 @@ def get_pdf_text(pdf_docs):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
+def get_query_generation_chain(vectorstore):
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.3)
+    memory = ConversationBufferMemory(return_messages=True)
+    retriever = vectorstore.as_retriever()
+    
+    # Template for generating Boolean queries
+    template = """You are an AI assistant that generates Boolean search queries based on context.
+    
+    Context: {context}
+    Query Request: {question}
+    
+    Generate a Boolean search query for the given context and question."""
+    
+    prompt = ChatPromptTemplate.from_template(template)
+    
+    chain = (
+        {"context": retriever, "question": RunnablePassthrough()} 
+        | prompt 
+        | llm 
+        | StrOutputParser()
+    )
+    
+    return chain, memory
