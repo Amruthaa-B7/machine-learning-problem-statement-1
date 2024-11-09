@@ -11,3 +11,5 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 import os
 
+load_dotenv()
+os.environ["GOOGLE_API_KEY"]
