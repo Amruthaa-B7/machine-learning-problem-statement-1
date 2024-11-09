@@ -18,3 +18,9 @@ css = '''
   border-radius: 50%;
   object-fit: cover;
 }
+.chat-message .message {
+  width: 80%;
+  padding: 0 1.5rem;
+  color: #fff;
+}
+'''
