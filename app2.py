@@ -58,3 +58,22 @@ def get_query_generation_chain(vectorstore):
     )
     
     return chain, memory
+def handle_userinput(user_request):
+    if st.session_state.query_chain is None:
+        st.error("Please upload and process a PDF document first!")
+        return
+
+    try:
+        response = st.session_state.query_chain.invoke(user_request)
+        
+        # Display the generated Boolean query in a scrollable area
+        with st.expander("Generated Boolean Queries", expanded=True):
+            for user_query, generated_query in st.session_state.query_history:
+                st.write(f"User Query: **{user_query}**")
+                st.write(f"Boolean Query: `{generated_query}`")
+
+        # Store history
+        st.session_state.query_history.append((user_request, response))
+
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
